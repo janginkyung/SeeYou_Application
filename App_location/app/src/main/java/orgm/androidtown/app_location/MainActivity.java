@@ -8,84 +8,97 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.skp.Tmap.TMapData;
+import com.skp.Tmap.TMapGpsManager;
+import com.skp.Tmap.TMapMarkerItem;
+import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapView;
 
 public class MainActivity extends AppCompatActivity {
     LocationManager location;
-    Mylocationlistner listner;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+    TMapView tmapview ;
+
+    LocationListener locationlistner ;
+    TMapGpsManager tmaps ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SupportMapFragment fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
-
-
+        RelativeLayout relativeLayout=new RelativeLayout(this) ;
+        tmapview=new TMapView(this) ;
         location = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        listner = new Mylocationlistner();
+        tmaps=new TMapGpsManager(MainActivity.this) ;
 
-        requestmylocation();
+        tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
+        tmapview.setZoomLevel(15);
+        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
+        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
+        tmapview.setSightVisible(true);
+        tmapview.setTrackingMode(true);
+        relativeLayout.addView(tmapview);
+
+        TMapMarkerItem tourmarker=new TMapMarkerItem() ;
+        TMapPoint tpoint=new TMapPoint(127.0835028,37.239326) ;
+        tourmarker.setTMapPoint(tpoint);
+        tourmarker.setVisible(TMapMarkerItem.VISIBLE);
+        tmapview.setCenterPoint(127.0835028,37.239326,false);
+        tmapview.addMarkerItem("hi",tourmarker);
+
+        locationlistner= new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                Double latitude = location.getLatitude();
+                Double longtitude = location.getLongitude();
+                Log.d("Mainactivity","showcurrent 내위치:"+latitude+" "+longtitude) ;
+                tmapview.setLocationPoint(longtitude, latitude);
+                showcurrentmap(latitude, longtitude);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+        setContentView(relativeLayout);
+
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    public void requestmylocation() {
-        int mintime = 10000;
-        float mindistance = 0;
+    private void showcurrentmap(Double latitude,Double longtitude){
+        Toast.makeText(getApplicationContext(),"showcurrentmap 실행 ",Toast.LENGTH_LONG).show();
 
-        location.requestLocationUpdates(LocationManager.GPS_PROVIDER, mintime, mindistance, listner);
-        location.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, mintime, mindistance, listner);
-        Location lastlocation = location.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if (lastlocation != null) {
-            Double latitude = lastlocation.getLatitude();
-            Double longtitude = lastlocation.getLongitude();
-            Toast.makeText(getApplicationContext(),"가장 최근의  내 위치 정보: " + latitude + ", " + longtitude,Toast.LENGTH_LONG).show();
-
-        }
-    }
-
-
-
-    class Mylocationlistner implements LocationListener {
-        @Override
-        public void onLocationChanged(Location location) {
-
-            Double latitude = location.getLatitude();
-            Double longtitude = location.getLongitude();
-            Toast.makeText(getApplicationContext(),"내 위치 정보: " + latitude + ", " + longtitude,Toast.LENGTH_LONG).show();
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    }
-
+        Log.d("Mainactivity","showcurrent 내위치:"+latitude+" "+longtitude) ;
+        TMapMarkerItem tourmarker=new TMapMarkerItem() ;
+        TMapPoint tpoint=new TMapPoint(longtitude,latitude) ;
+        tourmarker.setTMapPoint(tpoint);
+        tourmarker.setVisible(TMapMarkerItem.VISIBLE);
+        tmapview.setCenterPoint(longtitude,latitude,false);
+        tmapview.addMarkerItem("hi",tourmarker);
+     }
 
 }
