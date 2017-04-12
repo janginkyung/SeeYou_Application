@@ -1,48 +1,51 @@
 package orgm.androidtown.app_location;
 
-import android.content.Context;
+import android.app.TabActivity;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TabHost;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
-import com.skp.Tmap.TMapMarkerItem;
+import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapView;
 
-public class MainActivity extends AppCompatActivity {
-    LocationManager location;
+import org.xml.sax.SAXException;
+import android.widget.TabHost ;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+public class MainActivity extends TabActivity implements TMapGpsManager.onLocationChangedCallback {
     TMapView tmapview ;
-
-    LocationListener locationlistner ;
-    TMapGpsManager tmaps ;
-
+    TMapGpsManager gps ;
+    String url ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+      // window.setStatusBarColor(Integer.parseInt("#E86262"));
 
-        RelativeLayout relativeLayout=new RelativeLayout(this) ;
         tmapview=new TMapView(this) ;
-        location = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        tmaps=new TMapGpsManager(MainActivity.this) ;
-
         tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
@@ -51,54 +54,63 @@ public class MainActivity extends AppCompatActivity {
         tmapview.setTrackingMode(true);
         relativeLayout.addView(tmapview);
 
-        TMapMarkerItem tourmarker=new TMapMarkerItem() ;
-        TMapPoint tpoint=new TMapPoint(127.0835028,37.239326) ;
-        tourmarker.setTMapPoint(tpoint);
-        tourmarker.setVisible(TMapMarkerItem.VISIBLE);
-        tmapview.setCenterPoint(127.0835028,37.239326,false);
-        tmapview.addMarkerItem("hi",tourmarker);
+        Resources res = getResources();
+        TabHost tabHost = getTabHost(); //탭을 붙이기위한 탭호스객체선언
+        TabHost.TabSpec spec; //탭호스트에 붙일 각각의 탭스펙을 선언 ; 각 탭의 메뉴와 컨텐츠를 위한 객체
+        Intent intent; //각탭에서 사용할 인텐트 선언
+//// 탭엑티비티 무조건 0번째 탭이 선택되어지는 버그를 회피하기 위한 코드
+//        intent = new Intent(this, BlankActivity.class);
+//        spec = tabHost.newTabSpec("").setIndicator("")
+//                .setContent(intent);
+//        tabHost.addTab(spec);
+//        tabHost.getTabWidget()
+//                .getChildTabViewAt(0).setVisibility(View.GONE);
 
-        locationlistner= new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Double latitude = location.getLatitude();
-                Double longtitude = location.getLongitude();
-                Log.d("Mainactivity","showcurrent 내위치:"+latitude+" "+longtitude) ;
-                tmapview.setLocationPoint(longtitude, latitude);
-                showcurrentmap(latitude, longtitude);
-            }
+        //인텐트 생성
+        intent = new Intent().setClass(this, FirstTab.class);
+        //각 탭의 메뉴와 컨텐츠를 위한 객체 생성
+        spec = tabHost.newTabSpec("textList").setIndicator("",res.getDrawable(R.drawable.placeholder)).setContent(intent);
+        spec.setContent(R.id.tab1) ;
+        tabHost.addTab(spec);
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
 
-            }
+        //인텐트 생성
+        intent = new Intent().setClass(this, SecondTab.class);
+        //각 탭의 메뉴와 컨텐츠를 위한 객체 생성
+        spec = tabHost.newTabSpec("result").setIndicator("친구").setContent(intent);
+        spec.setContent(R.id.tab2) ;
+        tabHost.addTab(spec);
 
-            @Override
-            public void onProviderEnabled(String provider) {
 
-            }
+        //인텐트 생성
+        intent = new Intent().setClass(this, ThirdTab.class);
+        //각 탭의 메뉴와 컨텐츠를 위한 객체 생성
+        spec = tabHost.newTabSpec("help").setIndicator("",res.getDrawable(R.drawable.bus)).setContent(intent);
+        spec.setContent(R.id.tab3) ;
+        tabHost.addTab(spec);
 
-            @Override
-            public void onProviderDisabled(String provider) {
+        String query=null ;
+        url="https://apis.skplanetx.com/tmap/pois?version=1&searchKeyword=";
+        try {
+            query = URLEncoder.encode("카카오프렌즈", "UTF-8") ;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } ;
+        url += query;
+        Log.d("url", url);
 
-            }
-        };
-        setContentView(relativeLayout);
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
+            //Toast.makeText(getApplicationContext(), "getCenterPoint 지금 위치는 "+latitude+" " +longtitude , Toast.LENGTH_LONG).show();
     }
 
-    private void showcurrentmap(Double latitude,Double longtitude){
-        Toast.makeText(getApplicationContext(),"showcurrentmap 실행 ",Toast.LENGTH_LONG).show();
 
-        Log.d("Mainactivity","showcurrent 내위치:"+latitude+" "+longtitude) ;
-        TMapMarkerItem tourmarker=new TMapMarkerItem() ;
-        TMapPoint tpoint=new TMapPoint(longtitude,latitude) ;
-        tourmarker.setTMapPoint(tpoint);
-        tourmarker.setVisible(TMapMarkerItem.VISIBLE);
-        tmapview.setCenterPoint(longtitude,latitude,false);
-        tmapview.addMarkerItem("hi",tourmarker);
-     }
+    @Override
+    public void onLocationChange(Location location) {
+        TMapPoint tpoint=gps.getLocation() ;
+        double latitude= tpoint.getLatitude() ;
+        double longtitude=tpoint.getLongitude() ;
+        tmapview.setCenterPoint(longtitude, latitude);
+        Toast.makeText(getApplicationContext(), "getLocationPoint 지금 위치는 "+latitude+" " +longtitude , Toast.LENGTH_LONG).show();
+    }
+
 
 }
