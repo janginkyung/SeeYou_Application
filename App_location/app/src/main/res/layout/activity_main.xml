@@ -4,68 +4,10 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="orgm.androidtown.app_location.MainActivity">
-
-
-   <TabHost
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:layout_marginTop="20dp"
-       android:id="@android:id/tabhost"
-       >
-
-      <LinearLayout
-
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:orientation="vertical">
-         <FrameLayout
-             android:id="@android:id/tabcontent"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:layout_weight="1"
-             >
-            <LinearLayout
-                android:id="@+id/tab1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/tab2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/tab3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-            </LinearLayout>
-         </FrameLayout>
-         <TabWidget
-             android:background="#F5F0E2"
-             android:id="@android:id/tabs"
-             android:layout_width="match_parent"
-             android:layout_height="56dp" />
-      </LinearLayout>
-   </TabHost>
-
-   <EditText
-       android:layout_width="278dp"
-       android:layout_height="wrap_content"
-       android:inputType="textPersonName"
-       android:layout_marginTop="30.5dp"
-       android:padding="10dp"
-       android:background="#FAFAFA"
-       android:text="Search people  places"
-       android:ems="10"
-       android:textColor="#9A8E8E"
-       android:textSize="20dp"
-       android:id="@+id/editText"
-       android:layout_alignParentTop="true"
-       android:layout_centerHorizontal="true" />
-
-
+    tools:context="orgm.androidtown.app_location.MainActivity"
+    android:background="@color/common_google_signin_btn_text_dark_pressed">
+<android.support.v4.view.ViewPager
+    android:id="@+id/viewpager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 </RelativeLayout>
