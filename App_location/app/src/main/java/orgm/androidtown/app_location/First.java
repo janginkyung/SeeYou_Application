@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -39,22 +40,7 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
 
         // Required empty public constructor
     }
-    public First Changefragment(int i) {
-        Log.d("mainactivity" ,"tabmenu is  null") ;
-if(tabmenu!=null) {
-    Log.d("mainactivity" ,"tabmenu is not null") ;
 
-    if (i == 0) {
-        tabmenu.setVisibility(View.INVISIBLE);
-    } else {
-        tabmenu.setVisibility(View.VISIBLE);
-        Log.d("mainactivity" ,"tabmenu is visible") ;
-
-    }
-    // Required empty public constructor
-}
-        return this ;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

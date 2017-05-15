@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -61,8 +62,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
         fragment1=new First() ;
         fragment2=fragment1;
-
-        fragment3=fragment1.Changefragment(1) ;
+        fragment3=fragment1;
         fragment4=new Fourth() ;
 
         tabMap = bar.newTab();
