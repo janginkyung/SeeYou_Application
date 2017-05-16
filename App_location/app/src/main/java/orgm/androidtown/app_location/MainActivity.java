@@ -34,10 +34,11 @@ import com.skp.Tmap.TMapView;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener {
-    First fragment1,fragment2,fragment3 ;
-    Fourth fragment4 ;
+    First fragment1 ;
+    Fourth fragment2 ;
+    fragment_second_first fragment3 ;
 
-    LinearLayout tablayout ;
+    LinearLayout menu1, menu2 ;
 
     android.support.v7.app.ActionBar bar;
     String url ;
@@ -52,18 +53,17 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tablayout=(LinearLayout)findViewById(R.id.linearlayout) ;
+
         bar=getSupportActionBar() ;
         setContentView(R.layout.activity_main) ;
-
+        menu1=(LinearLayout)findViewById(R.id.linearlayout2) ;
+        menu2=(LinearLayout)findViewById(R.id.linearlayout3) ;
         bar.setDisplayShowHomeEnabled(false);
         bar.setDisplayShowTitleEnabled(false);
         bar.setNavigationMode(android.support.v7.app.ActionBar.NAVIGATION_MODE_TABS);
 
         fragment1=new First() ;
-        fragment2=fragment1;
-        fragment3=fragment1;
-        fragment4=new Fourth() ;
+        fragment2=new Fourth() ;
 
         tabMap = bar.newTab();
         tabFriend = bar.newTab();
@@ -111,10 +111,21 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         Fragment selected=null ;
         if(position==0){
             selected=fragment1 ;
-        }else if(position==1) {selected=fragment1;
+            menu1.setVisibility(View.INVISIBLE);
+            menu2.setVisibility(View.INVISIBLE);
+        }else if(position==1) {
+            menu1.setVisibility(View.VISIBLE);
+            menu1.bringToFront();
+            menu2.setVisibility(View.INVISIBLE);
+            selected=fragment1;
 }
-        else if(position==2)selected=fragment3 ;
-        else selected=fragment4 ;
+        else if(position==2){
+            menu2.setVisibility(View.VISIBLE);
+            menu2.bringToFront();
+            menu1.setVisibility(View.INVISIBLE);
+            selected=fragment1;
+        }
+        else selected=fragment2 ;
 
         getSupportFragmentManager().beginTransaction().replace(R.id.container1,selected).commit() ;
 }
@@ -128,4 +139,24 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     public void onTabReselected(android.support.v7.app.ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
 
     }
+
+
+
+    public void onButton1clicked(View v){
+        menu1.setVisibility(View.INVISIBLE);
+        fragment3= new fragment_second_first();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container1,fragment3).commit() ;
+    }
+    public void onButton2clicked(View v){
+        menu1.setVisibility(View.INVISIBLE);
+        fragment3= new fragment_second_first();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container1,fragment3).commit() ;
+    }
+    public void onButton3clicked(View v){
+        menu1.setVisibility(View.INVISIBLE);
+        fragment3= new fragment_second_first();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container1,fragment3).commit() ;
+    }
+
+
 }

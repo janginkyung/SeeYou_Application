@@ -3,11 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="orgm.androidtown.app_location.Fourth">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
 
-    <!-- TODO: Update blank fragment layout -->
+    >
     <TextView
+        android:layout_centerInParent="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="버스 정보 확인하기" />
+
+    <EditText
+        android:layout_margin="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:ems="10"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/editText"
+        android:background="?attr/colorPrimary" />
+
+
+</RelativeLayout>
+    <!-- TODO: Update blank fragment layout -->
 
 </FrameLayout>

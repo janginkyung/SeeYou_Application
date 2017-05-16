@@ -32,10 +32,6 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
     TMapView tmapview ;
     TMapGpsManager gps ;
     Context mcontext ;
-
-    LinearLayout tabmenu ;
-
-
     public First() {
 
         // Required empty public constructor
@@ -58,7 +54,6 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
         boolean click=tmapview.setClick() ;
         ViewGroup viewGroup=(ViewGroup)inflater.inflate(R.layout.fragment_first,container,false) ;
         viewGroup.addView(tmapview);
-        tabmenu=(LinearLayout)viewGroup.findViewById(R.id.linearlayout) ;
         // Inflate the layout for this fragment
         return viewGroup ;
     }

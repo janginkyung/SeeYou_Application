@@ -6,6 +6,78 @@
     android:layout_height="match_parent"
     tools:context="orgm.androidtown.app_location.MainActivity"
     android:background="@color/common_google_signin_btn_text_dark_pressed">
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:id="@+id/linearlayout2"
+        android:background="@android:color/background_light">
+
+        <Button
+            android:layout_marginLeft="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/button2"
+            android:layout_weight="1"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/route"
+            android:onClick="onButton1clicked"
+            />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/button3"
+            android:layout_weight="1"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/friend"
+            android:onClick="onButton2clicked"
+            />
+
+        <Button
+            android:layout_marginRight="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/button4"
+            android:layout_weight="1"
+            android:background="@drawable/star"
+            android:onClick="onButton3clicked"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:id="@+id/linearlayout3"
+        android:background="@android:color/background_light">
+
+        <Button
+            android:layout_marginLeft="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/button5"
+            android:layout_weight="1"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/cafe"
+            android:onClick="onButton4clicked"
+            />
+
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/button6"
+            android:layout_weight="1"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/friend"
+            android:onClick="onButton5clicked"
+            />
+
+
+    </LinearLayout>
+
 
     <FrameLayout
         android:layout_width="match_parent"

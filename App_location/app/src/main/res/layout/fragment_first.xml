@@ -1,60 +1,16 @@
 
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="orgm.androidtown.app_location.First" >
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
-        android:layout_margin="20dp"
-        android:id="@+id/linearlayout">
-
-        <Button
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:id="@+id/button2"
-            android:layout_weight="1"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/route"
-
-            />
-
-        <Button
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:id="@+id/button3"
-            android:layout_weight="1"
-            android:layout_marginRight="50dp"
-            android:background="@drawable/friend"
-            />
-
-        <Button
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:id="@+id/button4"
-            android:layout_weight="1"
-            android:background="@drawable/star"
-            />
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="orgm.androidtown.app_location.First" />
-
-    </LinearLayout>
+tools:context="orgm.androidtown.app_location.First" >
     <FrameLayout
-        android:layout_width="500dp"
-        android:layout_height="500dp"
-       >
-
-
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:id="@+id/container1">
     </FrameLayout>
 
-
 </LinearLayout>
-
 
