@@ -16,13 +16,20 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 
 /**
@@ -32,6 +39,7 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
     TMapView tmapview ;
     TMapGpsManager gps ;
     Context mcontext ;
+    TMapData tmapdata;
     public First() {
 
         // Required empty public constructor
@@ -45,6 +53,7 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
         if(getActivity()!=null){
             mcontext=getActivity() ;
         }
+        tmapdata=new TMapData() ;
         tmapview=new TMapView(mcontext)  ;
         tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
         tmapview.setZoomLevel(15);
@@ -54,6 +63,17 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
         boolean click=tmapview.setClick() ;
         ViewGroup viewGroup=(ViewGroup)inflater.inflate(R.layout.fragment_first,container,false) ;
         viewGroup.addView(tmapview);
+        TMapPoint startpt=new TMapPoint(100,200) ;
+        TMapPoint endpt=new TMapPoint(30.12,27.65) ;
+        try {
+            TMapPolyLine polyline = tmapdata.findPathData(startpt, endpt);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
         // Inflate the layout for this fragment
         return viewGroup ;
     }

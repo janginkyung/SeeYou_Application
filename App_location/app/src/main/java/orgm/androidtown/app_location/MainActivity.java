@@ -37,8 +37,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     First fragment1 ;
     Fourth fragment2 ;
     fragment_second_first fragment3 ;
-
-    LinearLayout menu1, menu2 ;
+    fragment_third_first fragment4 ;
+    LinearLayout menu1, menu2 ,find;
 
     android.support.v7.app.ActionBar bar;
     String url ;
@@ -58,6 +58,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         setContentView(R.layout.activity_main) ;
         menu1=(LinearLayout)findViewById(R.id.linearlayout2) ;
         menu2=(LinearLayout)findViewById(R.id.linearlayout3) ;
+        find=(LinearLayout)findViewById(R.id.linearlayout4) ;
         bar.setDisplayShowHomeEnabled(false);
         bar.setDisplayShowTitleEnabled(false);
         bar.setNavigationMode(android.support.v7.app.ActionBar.NAVIGATION_MODE_TABS);
@@ -157,6 +158,16 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         fragment3= new fragment_second_first();
         getSupportFragmentManager().beginTransaction().replace(R.id.container1,fragment3).commit() ;
     }
+    public void onButton4clicked(View v) {
+        bar.hide();
+        menu2.setVisibility(View.INVISIBLE);
+        find.setVisibility(View.VISIBLE);
+        find.bringToFront();
 
+        getSupportFragmentManager().beginTransaction().replace(R.id.container1,fragment1).commit() ;
+    }
+    public void onButton5clicked(View v){
+        bar.show();
 
+    }
 }

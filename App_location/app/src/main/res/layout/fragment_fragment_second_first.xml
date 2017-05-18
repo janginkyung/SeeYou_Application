@@ -4,10 +4,51 @@
     android:layout_height="match_parent"
     tools:context="orgm.androidtown.app_location.fragment_second_first">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <EditText
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="  출발지"
+            android:ems="10"
+            android:id="@+id/editText2"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@color/colorPrimary" />
+
+        <EditText
+            android:padding="15dp"
+            android:layout_marginTop="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="  도착지"
+            android:ems="10"
+            android:id="@+id/editText1"
+            android:layout_below="@+id/editText2"
+            android:layout_alignLeft="@+id/editText2"
+            android:layout_alignStart="@+id/editText2"
+            android:layout_alignRight="@+id/editText2"
+            android:layout_alignEnd="@+id/editText2"
+            android:background="@color/colorPrimary" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/editText1"
+            android:layout_marginTop="18dp"
+            android:layout_alignRight="@+id/editText1"
+            android:layout_alignEnd="@+id/editText1"
+            android:layout_alignLeft="@+id/editText1"
+            android:layout_alignStart="@+id/editText1" />
+
+    </RelativeLayout>
 
 </FrameLayout>
