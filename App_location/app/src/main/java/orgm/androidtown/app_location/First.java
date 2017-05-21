@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,11 +16,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.LocationSource;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapMarkerItem;
@@ -39,10 +43,11 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class First extends Fragment implements TMapGpsManager.onLocationChangedCallback, TMapView.OnClickListenerCallback,View.OnClickListener{
+public class First extends Fragment implements TMapView.OnClickListenerCallback{
     private boolean m_bTrackingMode=true ;
     private Context mcontext ;
 
+    private LocationManager locationmanger;
     private TMapGpsManager tmapgps=null ;
     private TMapView tmapview ;
     private TMapData tmapdata=new TMapData() ;
@@ -53,12 +58,14 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
     private ArrayList<MapPoint> m_mapPoint=new ArrayList<MapPoint>() ;
 
     private String address ;
-    private Double lat=null ;
-    private Double lon=null ;
+    private Location location ;
+    private boolean isGPSenbled=false, isNetworkEnabled=false ;
 
+    private boolean check = false;
+    private double lat;
+    private double lon;
 
     public First() {
-
         // Required empty public constructor
     }
 
@@ -70,8 +77,13 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
         if(getActivity()!=null){
             mcontext=getActivity() ;
         }
+
         tmapview=new TMapView(mcontext)  ;
         tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
+
+        locationmanger=(LocationManager)mcontext.getSystemService(Context.LOCATION_SERVICE) ;
+        isGPSenbled=locationmanger.isProviderEnabled(LocationManager.GPS_PROVIDER) ;
+        isNetworkEnabled=locationmanger.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ;
 
         addPoint() ;
         showMarkerPoint() ;
@@ -79,74 +91,99 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
-
-        tmapgps=new TMapGpsManager(mcontext) ;
-        tmapgps.setMinTime(1000);
-        tmapgps.setMinDistance(5);
-        tmapgps.setProvider(tmapgps.NETWORK_PROVIDER);
-        tmapgps.OpenGps();
-
-        tmapview.setTrackingMode(true);
         tmapview.setSightVisible(true);
-
-        tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-            @Override
-            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-               lat=tMapMarkerItem.latitude ;
-                lon=tMapMarkerItem.longitude ;
-
-                tmapdata.convertGpsToAddress(lat,lon,new TMapData.ConvertGPSToAddressListenerCallback(){
-                    @Override
-                    public void onConvertToGPSToAddress(String s) {
-                        address=s ;
-                    }
-                });
-                Toast.makeText(mcontext,"주소: "+address,Toast.LENGTH_SHORT).show();
-            }
-        });
-
         ViewGroup viewGroup=(ViewGroup)inflater.inflate(R.layout.fragment_first,container,false) ;
         viewGroup.addView(tmapview);
 
 
 
-        final TMapMarkerItem Markeritem=new TMapMarkerItem() ;
+        //  tmapview.setCenterPoint( tmapview.getLocationPoint().getLongitude(),  tmapview.getLocationPoint().getLatitude());
+       // tmapview.setTrackingMode(false);
+     //   tmapview.setSightVisible(true);
 
-        TMapPoint startpt=new TMapPoint(37.5248, 126.93);
-        TMapPoint endpt=new TMapPoint(37.4601, 128.0428);
+       // tmapgps.setProvider();
 
-        Markeritem.setTMapPoint(startpt);
-        Markeritem.setName("출발지");
-        Markeritem.setVisible(TMapMarkerItem.VISIBLE);
 
-        Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),R.drawable.buses) ;
-        Markeritem.setIcon(bitmap);
 
-        tmapdata.findPathData(startpt, endpt, new TMapData.FindPathDataListenerCallback() {
-                @Override
-                public void onFindPathData(TMapPolyLine tMapPolyLine) {
-                    Log.d("tMapPolyLine","tMapPolyLine");
-                    tMapPolyLine.setLineColor(Color.BLUE);
-                    tMapPolyLine.setLineWidth(2);
-                    tmapview.addTMapPolyLine("TestID",tMapPolyLine);
-                    tmapview.addMarkerItem("Testmarker",Markeritem);
+        if(isNetworkEnabled){
+            locationmanger.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000,1,mLocationListner);
+            if(locationmanger!=null) {
+                location = locationmanger.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    check = true;
+                    lat = location.getLatitude();
+                    lon = location.getLongitude();
                 }
-            });
+            }}
+        if(isGPSenbled){
+            locationmanger.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1,mLocationListner);
+            if(locationmanger!=null){
+                location=locationmanger.getLastKnownLocation(LocationManager.GPS_PROVIDER) ;
+                if(location!=null){
+                    check = true;
+                    lat=location.getLatitude() ;
+                    lon=location.getLongitude() ;
+                }
+            }
+        }
 
+        Button button=(Button)viewGroup.findViewById(R.id.button7) ;
+        button.bringToFront();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(check) {
+                   tmapview.setCenterPoint(lat, lon);
+                }
+            }
+        });
+
+     //   tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+     //       @Override
+     //       public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+     //           lat=tMapMarkerItem.latitude ;
+     //           lon=tMapMarkerItem.longitude ;
+//
+     //           tmapdata.convertGpsToAddress(lat,lon,new TMapData.ConvertGPSToAddressListenerCallback(){
+     //               @Override
+     //               public void onConvertToGPSToAddress(String s) {
+     //                   address=s ;
+     //               }
+     //           });
+     //      //    Toast.makeText(mcontext,"주소: "+address,Toast.LENGTH_SHORT).show();
+     //       }
+     //   });
+
+
+
+       // final TMapMarkerItem Markeritem=new TMapMarkerItem() ;
+//
+       // TMapPoint startpt=new TMapPoint(37.5248, 126.93);
+       // TMapPoint endpt=new TMapPoint(37.4601, 128.0428);
+//
+       // Markeritem.setTMapPoint(startpt);
+       // Markeritem.setName("출발지");
+       // Markeritem.setVisible(TMapMarkerItem.VISIBLE);
+//
+       // Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),R.drawable.buses) ;
+       // Markeritem.setIcon(bitmap);
+//
+       // tmapdata.findPathData(startpt, endpt, new TMapData.FindPathDataListenerCallback() {
+       //         @Override
+       //         public void onFindPathData(TMapPolyLine tMapPolyLine) {
+       //             Log.d("tMapPolyLine","tMapPolyLine");
+       //             tMapPolyLine.setLineColor(Color.BLUE);
+       //             tMapPolyLine.setLineWidth(2);
+       //             tmapview.addTMapPolyLine("TestID",tMapPolyLine);
+       //             tmapview.addMarkerItem("Testmarker",Markeritem);
+       //         }
+       //     });
 
         return viewGroup ;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-
-        }
-    }
-
     public void addPoint() {//핀을 꼽을 포인트를 배열에 add
-    m_mapPoint.add(new MapPoint("강남",37.510350,127.066847)) ;
-
+         m_mapPoint.add(new MapPoint("강남",37.510350,127.066847)) ;
     }
 
     public void showMarkerPoint(){
@@ -175,16 +212,8 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
            String strID=String.format("pmarked%d",mMarkerID++ ) ;
             tmapview.addMarkerItem(strID,item1);
             mArrayMarkerID.add(strID);
-
         }
 
-    }
-
-    @Override
-    public void onLocationChange(Location location) {
-       if(m_bTrackingMode){
-           tmapview.setLocationPoint(location.getLongitude(),location.getLatitude());
-       }
     }
 
     @Override
@@ -196,6 +225,44 @@ public class First extends Fragment implements TMapGpsManager.onLocationChangedC
 
     @Override
     public boolean onPressUpEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint, PointF pointF) {
+        Log.d("mainactivity","점찍은 위치의 위도와 경도"+tMapPoint.getLatitude()+" "+tMapPoint.getLongitude());
         return false;
     }
+
+
+    private final LocationListener mLocationListner=new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("test", "onLocationChanged, location:" + location);
+            lat = location.getLongitude(); //경도
+            lon = location.getLatitude();   //위도
+            check = true;
+
+
+
+           // double altitude = location.getAltitude();   //고도
+           // float accuracy = location.getAccuracy();    //정확도
+           // String provider = location.getProvider();   //위치제공자
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+ //   protected LocationManager locationManager ;
+ //   public Location getLocation(){
+ //       locationManager=(LocationManager)
+ //   }
 }

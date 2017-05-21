@@ -141,8 +141,6 @@ public class MainActivity extends ActionBarActivity implements android.support.v
 
     }
 
-
-
     public void onButton1clicked(View v){
         menu1.setVisibility(View.INVISIBLE);
         fragment3= new fragment_second_first();

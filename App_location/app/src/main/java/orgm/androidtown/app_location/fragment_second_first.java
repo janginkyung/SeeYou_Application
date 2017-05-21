@@ -6,10 +6,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPOIItem;
@@ -24,30 +28,74 @@ import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class fragment_second_first extends Fragment {
-    TMapData tmapdata;
+    private TMapData tmapdata;
+    private Context mcontext;
 
-    EditText startpt, endpt ;
+    private String start, end;
+
+    private EditText startpt, endpt;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        startpt=(EditText)getView().findViewById(R.id.editText2) ;
-        endpt=(EditText)getView().findViewById(R.id.editText1) ;
-       tmapdata=new TMapData() ;
-if(startpt==null)
-        Log.d("fragment_second_first","null") ;
-        Log.d("fragment_second_first","notnull") ;
-        tmapdata.findAllPOI("SKT타워", 100, new TMapData.FindAllPOIListenerCallback() {
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_fragment_second_first, container, false);
+        if (getActivity() != null) {
+            mcontext = getActivity();
+        }
+        startpt = (EditText) viewGroup.findViewById(R.id.editText2);
+        startpt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onFindAllPOI(ArrayList<TMapPOIItem> arrayList) {
-                for(int i=0 ; i<arrayList.size() ; i++){
-                    TMapPOIItem item=arrayList.get(i) ;
-                    Log.d("findAllPOI","POI Name: " + item.getPOIName().toString() + ", " +
-                            "Address: " + item.getPOIAddress().replace("null", "") + ", " +
-                            "Point: " + item.getPOIPoint().toString());
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (actionId) {
+                    case EditorInfo.IME_ACTION_SEARCH:
+                        break;
+                    default:
+                        start = startpt.getText().toString();
+                        return false;
                 }
+                return true;
             }
         });
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fragment_second_first, container, false);
+        endpt = (EditText) viewGroup.findViewById(R.id.editText1);
+        endpt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (actionId) {
+                    case EditorInfo.IME_ACTION_SEARCH:
+                        break;
+                    default:
+                        end = endpt.getText().toString();
+                        tmapdata.findAllPOI(end, 100, new TMapData.FindAllPOIListenerCallback() {
+                            @Override
+                            public void onFindAllPOI(ArrayList<TMapPOIItem> arrayList) {
+                                for (int i = 0; i < arrayList.size(); i++) {
+                                    TMapPOIItem item = arrayList.get(i);
+                                    Log.d("findAllPOI", "POI Name: " + item.getPOIName().toString() + ", " +
+                                            "Address: " + item.getPOIAddress().replace("null", "") + ", " +
+                                            "Point: " + item.getPOIPoint().toString());
+                                }
+                            }
+                        });
+                        tmapdata.findAroundNamePOI(new TMapPoint(37.386800, 127.122955), "놀거리", 1, 100, new TMapData.FindAroundNamePOIListenerCallback() {
+                            @Override
+                            public void onFindAroundNamePOI(ArrayList<TMapPOIItem> arrayList) {
+                               for(int i=0 ; i<arrayList.size() ; i++){
+                                   TMapPOIItem item=arrayList.get(i) ;
+                                   Log.d("findAllPOI", "놀거리 Name: " + item.getPOIName().toString() + ", " +
+                                           "Address: " + item.getPOIAddress().replace("null", "") + ", " +
+                                           "Point: " + item.getPOIPoint().toString());
+                               }
+                            }
+                        });
+                        return false;
+                }
+                return true;
+            }
+        });
+        tmapdata = new TMapData();
+
+        return viewGroup;
     }
+
+
 }
