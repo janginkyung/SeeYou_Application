@@ -13,8 +13,8 @@ tools:context="orgm.androidtown.app_location.First" >
 
     <Button
         android:id="@+id/button7"
-        android:layout_width="61dp"
-        android:layout_height="52dp"
+        android:layout_width="78dp"
+        android:layout_height="78dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:background="@drawable/current_location"
