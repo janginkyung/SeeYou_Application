@@ -27,6 +27,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.LocationSource;
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapGpsManager;
@@ -39,7 +45,11 @@ import com.skp.Tmap.TMapView;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.LogManager;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,7 +61,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class First extends Fragment implements TMapView.OnClickListenerCallback {
     private Context mcontext;
 
-    private LocationManager locationmanger;
+    private LocationManager locationmanger ;
     private TMapView tmapview;
     private TMapData tmapdata = new TMapData();
 
@@ -63,18 +73,42 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     private String address;
     private Location CurrentLocation;
     private TMapPoint CurrentPoint;
-    private boolean isGPSenbled = false, isNetworkEnabled = false;
+    private boolean   isGPSenbled = false;
+    private boolean isNetworkEnabled = false;
 
     private boolean check = false;
     private double lat;
     private double lon;
 
-    private LocationListener mLocationListner;
+    private String Url ;
+    private LocationListener mLocationListner= new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("ㅗㅗㅗㅗㅗㅗㅗ", "onLocationChanged, location:" + location);
+            lon = location.getLongitude(); //경도
+            lat = location.getLatitude();   //위도
+            check = true;
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };;
 
     public First() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,35 +116,10 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         if (getActivity() != null) {
             mcontext = getActivity();
         }
-
         initMapview();
+
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_first, container, false);
         viewGroup.addView(tmapview);
-
-        mLocationListner = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Log.d("ㅗㅗㅗㅗㅗㅗㅗ", "onLocationChanged, location:" + location);
-                lon = location.getLongitude(); //경도
-                lat = location.getLatitude();   //위도
-                check = true;
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-        };
 
         setLocationManger();
 
@@ -125,6 +134,8 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
                 }
             }
         });
+        ConnectServer() ;
+        return viewGroup;
 
         //   tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
         //       @Override
@@ -165,7 +176,6 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         //         }
         //     });
 
-        return viewGroup;
     }
 
     public void addPoint() {//핀을 꼽을 포인트를 배열에 add
@@ -202,12 +212,34 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
 
     }
 
+    private void SetGpsNetwork(){
+        if(!isNetworkEnabled){
+            //show dialog to allow user to enable location settings
+            AlertDialog.Builder dialog = new AlertDialog.Builder(mcontext);
+            dialog.setTitle("GPS&NETWORK 설정 ");
+            dialog.setMessage("GPS나 NETWORK 활성화 시켜주세요. ");
+
+            dialog.setPositiveButton("설정", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+                }
+            });
+
+            dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    //nothing to do
+                }
+            });
+            dialog.show();
+        }
+
+    }
     private void initMapview() {
         tmapview = new TMapView(mcontext);
         tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
 
-        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
-
+        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);;
         addPoint();
         showMarkerPoint();
 
@@ -242,30 +274,9 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     }
 
     private void setLocationManger() {
-        isGPSenbled = locationmanger.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetworkEnabled = locationmanger.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-        if(!isNetworkEnabled){
-            //show dialog to allow user to enable location settings
-            AlertDialog.Builder dialog = new AlertDialog.Builder(mcontext);
-            dialog.setTitle("네트워크로 위치 받아오기");
-            dialog.setMessage("dd");
-
-            dialog.setPositiveButton("설정", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
-                }
-            });
-
-            dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    //nothing to do
-                }
-            });
-            dialog.show();
-        }
-
+        isNetworkEnabled=locationmanger.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ;
+        isGPSenbled=locationmanger.isProviderEnabled(LocationManager.GPS_PROVIDER) ;
+        SetGpsNetwork() ;
         if(isNetworkEnabled) {
             locationmanger.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000,1,mLocationListner);
             CurrentLocation = locationmanger.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -284,16 +295,70 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         }
     }
 
+    private void ConnectServer(){
+        Url="http://172.16.214.98:23023" ;
+        String posturl="/User";
+        StringRequest request=new StringRequest(Request.Method.POST, Url+posturl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("connect","on response 호출됨"+response) ;
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params =new HashMap<>() ;
+                    params.put("UserId","999") ;
+                    params.put("UserName","sasa") ;
+
+                return params;
+            }
+        } ;
+        String geturl="/UserId";
+        final String userid="123" ;
+        StringRequest request2=new StringRequest(Request.Method.GET, Url +geturl+ "/"+userid, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("connect","on response 호출됨"+response) ;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params =new HashMap<>() ;
+                params.put("UserId",userid) ;
+                return params ;
+            }
+
+        };
+
+
+                request.setShouldCache(false);
+        Volley.newRequestQueue(mcontext).add(request) ;
+        request2.setShouldCache(false);
+        Volley.newRequestQueue(mcontext).add(request2) ;
+        Log.d("connect","웹 서버에 요청함 "+Url) ;
+    }
 
     @Override
     public boolean onPressEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint, PointF pointF) {
-        Log.d("mainactivity", "점찍은 위치의 위도와 경도" + tMapPoint.getLatitude() + " " + tMapPoint.getLongitude());
+
         return true;
     }
 
     @Override
     public boolean onPressUpEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint, PointF pointF) {
-        Log.d("mainactivity", "점찍은 위치의 위도와 경도" + tMapPoint.getLatitude() + " " + tMapPoint.getLongitude());
+
         return false;
     }
 
