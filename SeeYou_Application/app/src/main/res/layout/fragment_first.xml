@@ -5,10 +5,29 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 tools:context="orgm.androidtown.app_location.First" >
 
+    <TextView
+        android:text="친구"
+        android:layout_marginLeft="20dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/FriendNameTextview"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"
+        />
+
+    <Button
+        android:text="위치 받아오기"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/GetLocationButton"
+        android:layout_alignParentRight="true"
+        android:visibility="gone"
+        />
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/container1">
+
     </FrameLayout>
 
     <Button

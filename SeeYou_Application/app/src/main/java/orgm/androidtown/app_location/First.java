@@ -4,16 +4,13 @@ package orgm.androidtown.app_location;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.annotation.Nullable;
+
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -22,10 +19,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,27 +28,21 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.LocationSource;
+import com.google.gson.JsonArray;
 import com.skp.Tmap.TMapData;
-import com.skp.Tmap.TMapGpsManager;
 import com.skp.Tmap.TMapMarkerItem;
 import com.skp.Tmap.TMapPOIItem;
 import com.skp.Tmap.TMapPoint;
 import com.skp.Tmap.TMapPolyLine;
 import com.skp.Tmap.TMapView;
 
-import org.xml.sax.SAXException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.LogManager;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,7 +57,7 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     private int mMarkerID;
     private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
     private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
-    private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
+    //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
 
     private String address;
     private Location CurrentLocation;
@@ -79,6 +68,10 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     private boolean check = false;
     private double lat;
     private double lon;
+
+    private GetTextButtonViewListner viewlistner;
+    TextView FriendNameTextview;
+    Button GetLocationButton;
 
     private String Url ;
     private LocationListener mLocationListner= new LocationListener() {
@@ -119,6 +112,11 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         initMapview();
 
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_first, container, false);
+
+        FriendNameTextview=(TextView)viewGroup.findViewById(R.id.FriendNameTextview);
+        GetLocationButton=(Button)viewGroup.findViewById(R.id.GetLocationButton);
+        viewlistner.GetTextButtonView(GetLocationButton,FriendNameTextview);
+
         viewGroup.addView(tmapview);
 
         setLocationManger();
@@ -178,39 +176,39 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
 
     }
 
-    public void addPoint() {//핀을 꼽을 포인트를 배열에 add
-        m_mapPoint.add(new MapPoint("강남", 37.510350, 127.066847));
-    }
+ //  public void addPoint() {//핀을 꼽을 포인트를 배열에 add
+ //      m_mapPoint.add(new MapPoint("강남", 37.510350, 127.066847));
+ //  }
 
-    public void showMarkerPoint() {
-        for (int i = 0; i < m_mapPoint.size(); i++) {
-            TMapPoint point = new TMapPoint(m_mapPoint.get(i).getLatitude(), m_mapPoint.get(i).getLongtitude());
-            TMapMarkerItem item1 = new TMapMarkerItem();
-            Bitmap bitmap = null;
-            bitmap = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
+ //  public void showMarkerPoint() {
+ //      for (int i = 0; i < m_mapPoint.size(); i++) {
+ //          TMapPoint point = new TMapPoint(m_mapPoint.get(i).getLatitude(), m_mapPoint.get(i).getLongtitude());
+ //          TMapMarkerItem item1 = new TMapMarkerItem();
+ //          Bitmap bitmap = null;
+ //          bitmap = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
 
-            item1.setTMapPoint(point);
-            item1.setName(m_mapPoint.get(i).getName());
-            item1.setVisible(item1.VISIBLE);
+ //          item1.setTMapPoint(point);
+ //          item1.setName(m_mapPoint.get(i).getName());
+ //          item1.setVisible(item1.VISIBLE);
 
-            item1.setIcon(bitmap);
+ //          item1.setIcon(bitmap);
 
-            bitmap = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
-            item1.setCalloutTitle(m_mapPoint.get(i).getName());
-            item1.setCalloutSubTitle("서울");
-            item1.setCanShowCallout(true);
-            item1.setAutoCalloutVisible(true);
+ //          bitmap = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
+ //          item1.setCalloutTitle(m_mapPoint.get(i).getName());
+ //          item1.setCalloutSubTitle("서울");
+ //          item1.setCanShowCallout(true);
+ //          item1.setAutoCalloutVisible(true);
 
-            Bitmap bitmap_i = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
+ //          Bitmap bitmap_i = BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.point);
 
-            item1.setCalloutRightButtonImage(bitmap_i);
+ //          item1.setCalloutRightButtonImage(bitmap_i);
 
-            String strID = String.format("pmarked%d", mMarkerID++);
-            tmapview.addMarkerItem(strID, item1);
-            mArrayMarkerID.add(strID);
-        }
+ //          String strID = String.format("pmarked%d", mMarkerID++);
+ //          tmapview.addMarkerItem(strID, item1);
+ //          mArrayMarkerID.add(strID);
+ //      }
 
-    }
+ //  }
 
     private void SetGpsNetwork(){
         if(!isNetworkEnabled){
@@ -239,9 +237,7 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         tmapview = new TMapView(mcontext);
         tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
 
-        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);;
-        addPoint();
-        showMarkerPoint();
+        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
 
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
@@ -255,7 +251,9 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
                 TMapPoint clickMapPoint = tmapview.getTMapPointFromScreenPoint(event.getX(), event.getY());
                 Log.d("ClickedMapPoint", clickMapPoint.getLongitude() + " " + clickMapPoint.getLatitude());
 
-                if (CurrentLocation != null) {
+                if (CurrentLocation == null) {
+                    CurrentPoint=new TMapPoint(37.566474,126.985022);
+                }
                     tmapdata.findPathData(CurrentPoint, clickMapPoint, new TMapData.FindPathDataListenerCallback() {
                         @Override
                         public void onFindPathData(TMapPolyLine tMapPolyLine) {
@@ -266,7 +264,7 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
                             tmapview.addTMapPolyLine("dd", tMapPolyLine);
                         }
                     });
-                }
+
                 return false;
             }
 
@@ -296,8 +294,8 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     }
 
     private void ConnectServer(){
-        Url="http://172.16.214.98:23023" ;
-        String posturl="/User";
+        Url="http://172.16.15.160:23023";
+        String posturl="/user";
         StringRequest request=new StringRequest(Request.Method.POST, Url+posturl,
                 new Response.Listener<String>() {
                     @Override
@@ -311,43 +309,54 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
                         error.printStackTrace();
                     }
                 }){
+
+
+
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params =new HashMap<>() ;
-                    params.put("UserId","999") ;
-                    params.put("UserName","sasa") ;
+                params.put("UserId","100") ;
+                params.put("UserName","ddd") ;
 
                 return params;
             }
         } ;
-        String geturl="/UserId";
-        final String userid="123" ;
-        StringRequest request2=new StringRequest(Request.Method.GET, Url +geturl+ "/"+userid, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("connect","on response 호출됨"+response) ;
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params =new HashMap<>() ;
-                params.put("UserId",userid) ;
-                return params ;
-            }
-
-        };
-
-
-                request.setShouldCache(false);
+        request.setShouldCache(false);
         Volley.newRequestQueue(mcontext).add(request) ;
-        request2.setShouldCache(false);
-        Volley.newRequestQueue(mcontext).add(request2) ;
-        Log.d("connect","웹 서버에 요청함 "+Url) ;
+//
+    //    String posturl2="/user"+"/111"+"/123"+"/location";
+    //    StringRequest request2=new StringRequest(Request.Method.GET, Url+posturl2,
+    //            new Response.Listener<String>() {
+    //                @Override
+    //                public void onResponse(String response) {
+    //                    try {
+    //                        JSONArray jsonArray = new JSONArray(response);
+    //                        for ( int i = 0 ; i< jsonArray.length() ; i++) {
+    //                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+    //                            Log.d("아아아아악", jsonObject.getDouble("ReqLat") + "");
+    //                            Log.d("아아아아악2", jsonObject.getDouble("ReqLot") + "");
+    //                        }
+    //                    } catch (JSONException e) {
+    //                        e.printStackTrace();
+    //                    }
+//
+    //                }
+    //            },
+    //            new Response.ErrorListener() {
+    //                @Override
+    //                public void onErrorResponse(VolleyError error) {
+    //                    error.printStackTrace();
+    //                }
+    //            }){
+    //        @Override
+    //        protected Map<String, String> getParams() throws AuthFailureError {
+    //            Map<String, String> params =new HashMap<>() ;
+    //            return params;
+    //        }
+    //    } ;
+    //    request2.setShouldCache(false);
+    //    Volley.newRequestQueue(mcontext).add(request2) ;
     }
 
     @Override
@@ -362,7 +371,25 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         return false;
     }
 
+    public interface GetTextButtonViewListner{
+        void GetTextButtonView(Button b,TextView t);
+    }
 
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof GetTextButtonViewListner){
+            viewlistner=(GetTextButtonViewListner)context;
+        }else{
+            throw  new RuntimeException(context.toString()+"must implement GetTextButtonViewListner");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        viewlistner=null;
+    }
 }
 

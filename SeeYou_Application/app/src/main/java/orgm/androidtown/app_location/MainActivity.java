@@ -1,54 +1,40 @@
 package orgm.androidtown.app_location;
 //implements  android.support.v7.app.ActionBar.TabListener
-import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.app.TabActivity;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.location.Location;
 
-import android.app.ActionBar;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
-
-
-import com.skp.Tmap.TMapData;
-import com.skp.Tmap.TMapGpsManager;
-import com.skp.Tmap.TMapPOIItem;
-import com.skp.Tmap.TMapPoint;
-import com.skp.Tmap.TMapView;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener {
+
+
+public class MainActivity extends ActionBarActivity implements android.support.v7.app.ActionBar.TabListener,First.GetTextButtonViewListner {
     First fragment1 ;
     Fourth fragment2 ;
     fragment_second_first fragment3 ;
-    fragment_third_first fragment4 ;
     LinearLayout menu1, menu2 ,find;
 
+    FriendLocation friendLocation;
     android.support.v7.app.ActionBar bar;
     String url ;
     EditText edit ;
+
+    TextView FriendNameTextview;
+    Button GetLocationButton;
 
     private android.support.v7.app.ActionBar.Tab tabMap;
     private android.support.v7.app.ActionBar.Tab tabfindroute;
     private android.support.v7.app.ActionBar.Tab tabFriend;
     private android.support.v7.app.ActionBar.Tab tabBus;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         menu1=(LinearLayout)findViewById(R.id.linearlayout2) ;
         menu2=(LinearLayout)findViewById(R.id.linearlayout3) ;
         find=(LinearLayout)findViewById(R.id.linearlayout4) ;
+
         bar.setDisplayShowHomeEnabled(false);
         bar.setDisplayShowTitleEnabled(false);
         bar.setNavigationMode(android.support.v7.app.ActionBar.NAVIGATION_MODE_TABS);
@@ -112,6 +99,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
         Fragment selected=null ;
         if(position==0){
             selected=fragment1 ;
+
             menu1.setVisibility(View.INVISIBLE);
             menu2.setVisibility(View.INVISIBLE);
         }else if(position==1) {
@@ -124,6 +112,9 @@ public class MainActivity extends ActionBarActivity implements android.support.v
             menu2.setVisibility(View.VISIBLE);
             menu2.bringToFront();
             menu1.setVisibility(View.INVISIBLE);
+           FriendNameTextview.setVisibility(View.VISIBLE);
+           GetLocationButton.setVisibility(View.VISIBLE);
+           // friendLocation=new FriendLocation(GetLocationButton, getApplicationContext());
             selected=fragment1;
         }
         else selected=fragment2 ;
@@ -167,5 +158,11 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     public void onButton5clicked(View v){
         bar.show();
 
+    }
+
+    @Override
+    public void GetTextButtonView(Button b, TextView t) {
+        FriendNameTextview=t;
+        GetLocationButton=b;
     }
 }
