@@ -2,8 +2,10 @@ package orgm.androidtown.app_location;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,8 +18,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
+import com.skp.Tmap.TMapPolyLine;
+import com.skp.Tmap.TMapView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,15 +40,13 @@ public class FriendLocation {
     TMapPoint FriendPoint,MyLocation;
     Button FindFriend,Place;
 
+    TMapData tmapdata=Tdata.getInstance().GetTmapdata();
+    TMapView tmapview=Tdata.getInstance().GetTmapview();
     public  FriendLocation(Button Friend, Context context){
-        //MyLocation=CurrentLocation;
         FindFriend=Friend;
-        //Place=Hotplace;
         mContext=context;
 
-//        FindFriend.setVisibility(View.INVISIBLE);
- //       Place.setVisibility(View.INVISIBLE);
-
+        //친구 고르는 기능
         findFriendLocation();
         GetFriendLocation();
     }
@@ -58,39 +62,85 @@ public class FriendLocation {
 
     }
 
+    public void SetMylocation(TMapPoint Current){
+        MyLocation=Current;
+    }
+
     public void GetFriendLocation(){
-        String Url="http://172.16.15.160:23023";
-        String posturl=Url+"/user";
-        posturl+="/111"+"/123"+"/location";//요청을 보내는 사람, 받는 사람 순서
-        RequestQueue queue=Volley.newRequestQueue(mContext);
+        String Url="http://172.16.214.119:23023";
+        String User="/"+"111";
+        String Friend="/"+"123";
+        String userUrl="/location";//location의 아이드 추가해야한다.
 
-    JsonObjectRequest jsonObjectRequest=new JsonObjectRequest(Request.Method.GET, posturl, null,
-            new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.d("ㅎㅎㅎㅎ",response.toString());
-
-                        Log.d("connect","JSON oject 실행");
-     //                   String id = response.getString("ReqLat");
-     //                   String recordDate = response.getString("ReqLon");
-     //                   Log.d("connect",id+" "+recordDate);
-                    // catch (JSONException e){
-                     //   e.printStackTrace();
-                     // }
-                }
-            }, new Response.ErrorListener(){
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.d("connect","json 에서 에러 발생");
-        }
-    });
-        Volley.newRequestQueue(mContext).add(jsonObjectRequest) ;
-
+        StringRequest FriendLocationRequest=new StringRequest(Request.Method.GET, Url+userUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for ( int i = 0 ; i< jsonArray.length() ; i++) {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                FriendPoint=new TMapPoint(jsonObject.getDouble("ResLat"),jsonObject.getDouble("ResLon"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params =new HashMap<>() ;
+                return params;
+            }
+        } ;
+        FriendLocationRequest.setShouldCache(false);
+        Volley.newRequestQueue(mContext).add(FriendLocationRequest) ;
     }
 
-    public void FindPath(){
-
-
-
+    public void FindPath() {
+        tmapdata.findPathData(FriendPoint, Tdata.getInstance().GetCurrentLocation(), new TMapData.FindPathDataListenerCallback() {
+            @Override
+            public void onFindPathData(TMapPolyLine tMapPolyLine) {
+                tMapPolyLine.setLineColor(Color.BLUE);
+                tMapPolyLine.setLineWidth(2);
+                tmapview.addTMapPath(tMapPolyLine);
+                tmapview.addTMapPolyLine("dd", tMapPolyLine);
+            }
+        });
     }
+  //     tmapview.setOnTouchListener(new View.OnTouchListener() {
+  //         @Override
+  //         public boolean onTouch(View v, MotionEvent event) {
+  //             Log.d("GETXy", event.getX() + " " + event.getY());
+  //             TMapPoint clickMapPoint = tmapview.getTMapPointFromScreenPoint(event.getX(), event.getY());
+  //             Log.d("ClickedMapPoint", clickMapPoint.getLongitude() + " " + clickMapPoint.getLatitude());
+
+  //             if (FriendPoint == null) {
+  //                 Log.d("error","FriendPoint null ");
+  //                 FriendPoint=new TMapPoint(37.566474,126.985022);
+  //             }
+  //             tmapdata.findPathData(FriendPoint, clickMapPoint, new TMapData.FindPathDataListenerCallback() {
+  //                 @Override
+  //                 public void onFindPathData(TMapPolyLine tMapPolyLine) {
+  //                     Log.d("tMapPolyLine", "tMapPolyLine");
+  //                     tMapPolyLine.setLineColor(Color.BLUE);
+  //                     tMapPolyLine.setLineWidth(2);
+  //                     tmapview.addTMapPath(tMapPolyLine);
+  //                     tmapview.addTMapPolyLine("dd", tMapPolyLine);
+  //                 }
+  //             });
+
+  //             return false;
+  //         }
+
+  //     });
+
+
 }

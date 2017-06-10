@@ -49,19 +49,10 @@ import java.util.Map;
  */
 public class First extends Fragment implements TMapView.OnClickListenerCallback {
     private Context mcontext;
-
     private LocationManager locationmanger ;
     private TMapView tmapview;
-    private TMapData tmapdata = new TMapData();
 
-    private int mMarkerID;
-    private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
-    private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
-    //private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
-
-    private String address;
     private Location CurrentLocation;
-    private TMapPoint CurrentPoint;
     private boolean   isGPSenbled = false;
     private boolean isNetworkEnabled = false;
 
@@ -72,14 +63,47 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
     private GetTextButtonViewListner viewlistner;
     TextView FriendNameTextview;
     Button GetLocationButton;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        if (getActivity() != null) {
+            mcontext = getActivity();
+        }
 
+        tmapview = Tdata.getInstance().GetTmapview();
+        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
+
+        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_first, container, false);
+
+        FriendNameTextview = (TextView) viewGroup.findViewById(R.id.FriendNameTextview);
+        GetLocationButton = (Button) viewGroup.findViewById(R.id.GetLocationButton);
+        viewlistner.GetTextButtonView(GetLocationButton, FriendNameTextview);
+
+        viewGroup.addView(tmapview);
+
+        setLocationManger();
+
+        Button button = (Button) viewGroup.findViewById(R.id.button7);
+        button.bringToFront();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (check) {
+                    tmapview.setCenterPoint(lon, lat);
+                }
+            }
+        });
+
+        ConnectServer();
+        return viewGroup;
+    }
     private String Url ;
     private LocationListener mLocationListner= new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d("ㅗㅗㅗㅗㅗㅗㅗ", "onLocationChanged, location:" + location);
             lon = location.getLongitude(); //경도
             lat = location.getLatitude();   //위도
+            Tdata.getInstance().SetCurrentLocation(new TMapPoint(lat,lon));
             check = true;
         }
 
@@ -103,78 +127,6 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         // Required empty public constructor
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (getActivity() != null) {
-            mcontext = getActivity();
-        }
-        initMapview();
-
-        ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.fragment_first, container, false);
-
-        FriendNameTextview=(TextView)viewGroup.findViewById(R.id.FriendNameTextview);
-        GetLocationButton=(Button)viewGroup.findViewById(R.id.GetLocationButton);
-        viewlistner.GetTextButtonView(GetLocationButton,FriendNameTextview);
-
-        viewGroup.addView(tmapview);
-
-        setLocationManger();
-
-        Button button = (Button) viewGroup.findViewById(R.id.button7);
-        button.bringToFront();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (check) {
-                    tmapview.setCenterPoint(lon, lat);
-                    CurrentPoint = new TMapPoint(lat, lon);
-                }
-            }
-        });
-        ConnectServer() ;
-        return viewGroup;
-
-        //   tmapview.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-        //       @Override
-        //       public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-        //           lat=tMapMarkerItem.latitude ;
-        //           lon=tMapMarkerItem.longitude ;
-//
-        //           tmapdata.convertGpsToAddress(lat,lon,new TMapData.ConvertGPSToAddressListenerCallback(){
-        //               @Override
-        //               public void onConvertToGPSToAddress(String s) {
-        //                   address=s ;
-        //               }
-        //           });
-        //      //    Toast.makeText(mcontext,"주소: "+address,Toast.LENGTH_SHORT).show();
-        //       }
-        //   });
-
-        // final TMapMarkerItem Markeritem=new TMapMarkerItem() ;
-//
-        // TMapPoint startpt=new TMapPoint(37.5248, 126.93);
-        // TMapPoint endpt=new TMapPoint(37.4601, 128.0428);
-//
-        // Markeritem.setTMapPoint(startpt);
-        // Markeritem.setName("출발지");
-        // Markeritem.setVisible(TMapMarkerItem.VISIBLE);
-//
-        // Bitmap bitmap= BitmapFactory.decodeResource(getContext().getResources(),R.drawable.buses) ;
-        // Markeritem.setIcon(bitmap);
-//
-        // tmapdata.findPathData(startpt, endpt, new TMapData.FindPathDataListenerCallback() {
-        //         @Override
-        //         public void onFindPathData(TMapPolyLine tMapPolyLine) {
-        //             Log.d("tMapPolyLine","tMapPolyLine");
-        //             tMapPolyLine.setLineColor(Color.BLUE);
-        //             tMapPolyLine.setLineWidth(2);
-        //             tmapview.addTMapPolyLine("TestID",tMapPolyLine);
-        //             tmapview.addMarkerItem("Testmarker",Markeritem);
-        //         }
-        //     });
-
-    }
 
  //  public void addPoint() {//핀을 꼽을 포인트를 배열에 add
  //      m_mapPoint.add(new MapPoint("강남", 37.510350, 127.066847));
@@ -233,43 +185,7 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
         }
 
     }
-    private void initMapview() {
-        tmapview = new TMapView(mcontext);
-        tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
 
-        locationmanger = (LocationManager) mcontext.getSystemService(Context.LOCATION_SERVICE);
-
-        tmapview.setZoomLevel(15);
-        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
-        tmapview.setSightVisible(true);
-
-        tmapview.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d("GETXy", event.getX() + " " + event.getY());
-                TMapPoint clickMapPoint = tmapview.getTMapPointFromScreenPoint(event.getX(), event.getY());
-                Log.d("ClickedMapPoint", clickMapPoint.getLongitude() + " " + clickMapPoint.getLatitude());
-
-                if (CurrentLocation == null) {
-                    CurrentPoint=new TMapPoint(37.566474,126.985022);
-                }
-                    tmapdata.findPathData(CurrentPoint, clickMapPoint, new TMapData.FindPathDataListenerCallback() {
-                        @Override
-                        public void onFindPathData(TMapPolyLine tMapPolyLine) {
-                            Log.d("tMapPolyLine", "tMapPolyLine");
-                            tMapPolyLine.setLineColor(Color.BLUE);
-                            tMapPolyLine.setLineWidth(2);
-                            tmapview.addTMapPath(tMapPolyLine);
-                            tmapview.addTMapPolyLine("dd", tMapPolyLine);
-                        }
-                    });
-
-                return false;
-            }
-
-        });
-    }
 
     private void setLocationManger() {
         isNetworkEnabled=locationmanger.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ;
@@ -290,6 +206,7 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
             check = true;
             lat = CurrentLocation.getLatitude();
             lon = CurrentLocation.getLongitude();
+            Tdata.getInstance().SetCurrentLocation(new TMapPoint(lat,lon));
         }
     }
 
@@ -324,39 +241,6 @@ public class First extends Fragment implements TMapView.OnClickListenerCallback 
 
         request.setShouldCache(false);
         Volley.newRequestQueue(mcontext).add(request) ;
-//
-    //    String posturl2="/user"+"/111"+"/123"+"/location";
-    //    StringRequest request2=new StringRequest(Request.Method.GET, Url+posturl2,
-    //            new Response.Listener<String>() {
-    //                @Override
-    //                public void onResponse(String response) {
-    //                    try {
-    //                        JSONArray jsonArray = new JSONArray(response);
-    //                        for ( int i = 0 ; i< jsonArray.length() ; i++) {
-    //                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-    //                            Log.d("아아아아악", jsonObject.getDouble("ReqLat") + "");
-    //                            Log.d("아아아아악2", jsonObject.getDouble("ReqLot") + "");
-    //                        }
-    //                    } catch (JSONException e) {
-    //                        e.printStackTrace();
-    //                    }
-//
-    //                }
-    //            },
-    //            new Response.ErrorListener() {
-    //                @Override
-    //                public void onErrorResponse(VolleyError error) {
-    //                    error.printStackTrace();
-    //                }
-    //            }){
-    //        @Override
-    //        protected Map<String, String> getParams() throws AuthFailureError {
-    //            Map<String, String> params =new HashMap<>() ;
-    //            return params;
-    //        }
-    //    } ;
-    //    request2.setShouldCache(false);
-    //    Volley.newRequestQueue(mcontext).add(request2) ;
     }
 
     @Override

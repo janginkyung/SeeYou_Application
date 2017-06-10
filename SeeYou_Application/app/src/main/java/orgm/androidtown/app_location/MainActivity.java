@@ -23,6 +23,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
     fragment_second_first fragment3 ;
     LinearLayout menu1, menu2 ,find;
 
+
     FriendLocation friendLocation;
     android.support.v7.app.ActionBar bar;
     String url ;
@@ -76,8 +77,8 @@ public class MainActivity extends ActionBarActivity implements android.support.v
        int color= Color.parseColor("#FAFAFA") ;
         edit.getBackground().clearColorFilter();
         edit.setBackgroundColor(color);
-       // relativeLayout.addView(edit);
 
+        Tdata.getInstance().init(getApplicationContext());
         String query=null ;
         url="https://apis.skplanetx.com/tmap/pois?version=1&searchKeyword=";
         try {
@@ -114,7 +115,7 @@ public class MainActivity extends ActionBarActivity implements android.support.v
             menu1.setVisibility(View.INVISIBLE);
            FriendNameTextview.setVisibility(View.VISIBLE);
            GetLocationButton.setVisibility(View.VISIBLE);
-           // friendLocation=new FriendLocation(GetLocationButton, getApplicationContext());
+           friendLocation=new FriendLocation(GetLocationButton, getApplicationContext());
             selected=fragment1;
         }
         else selected=fragment2 ;

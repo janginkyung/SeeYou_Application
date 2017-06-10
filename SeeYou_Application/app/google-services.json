@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "684892073474",
+    "firebase_url": "https://seeyou-ab42b.firebaseio.com",
+    "project_id": "seeyou-ab42b",
+    "storage_bucket": "seeyou-ab42b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684892073474:android:63386890b9012b47",
+        "android_client_info": {
+          "package_name": "orgm.androidtown.app_location"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684892073474-i1vufltb8j8ktuupoun6ia3buegltv2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTIb9autSg62BYzzyaSF4RBYdzaqmn2aE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
