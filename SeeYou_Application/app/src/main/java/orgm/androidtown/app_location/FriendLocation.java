@@ -1,21 +1,14 @@
 package orgm.androidtown.app_location;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.skp.Tmap.TMapData;
@@ -27,9 +20,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import orgm.androidtown.app_location.singleton.Tdata;
 
 /**
  * Created by InKyung on 2017-06-01.
@@ -40,7 +34,7 @@ public class FriendLocation {
     TMapPoint FriendPoint,MyLocation;
     Button FindFriend,Place;
 
-    TMapData tmapdata=Tdata.getInstance().GetTmapdata();
+    TMapData tmapdata= Tdata.getInstance().GetTmapdata();
     TMapView tmapview=Tdata.getInstance().GetTmapview();
     public  FriendLocation(Button Friend, Context context){
         FindFriend=Friend;
@@ -67,7 +61,7 @@ public class FriendLocation {
     }
 
     public void GetFriendLocation(){
-        String Url="http://172.16.214.119:23023";
+        String Url="http://163.180.117.118:23023";
         String User="/"+"111";
         String Friend="/"+"123";
         String userUrl="/location";//location의 아이드 추가해야한다.

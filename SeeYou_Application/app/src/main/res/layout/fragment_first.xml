@@ -3,7 +3,7 @@
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context="orgm.androidtown.app_location.First" >
+tools:context="orgm.androidtown.app_location.view.fragment.FragmentTmap" >
 
     <TextView
         android:text="친구"
@@ -37,6 +37,17 @@ tools:context="orgm.androidtown.app_location.First" >
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:background="@drawable/current_location"
+
+    />
+
+    <ImageButton
+        android:id="@+id/modeSearchFunButton"
+        android:layout_width="85dp"
+        android:layout_height="85dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/icon_food"
+        android:background="@null"
 
         />
 

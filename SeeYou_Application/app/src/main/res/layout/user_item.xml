@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="#f2f2f2"
+    android:layout_height="100dp"
+    android:layout_marginBottom="3dp"
+    android:id="@+id/userConstraintLayout"
+    >
+    
+   <de.hdodenhof.circleimageview.CircleImageView
+       android:id="@+id/userImageView"
+       android:layout_width="70dp"
+       android:layout_height="70dp"
+       app:civ_border_width="2dp"
+       app:civ_border_color="#FF000000"
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintLeft_toLeftOf="parent"
+       android:layout_marginLeft="15dp"
+       android:layout_marginStart="15dp"
+       />
+
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:text="장인경"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@+id/userImageView"
+        app:layout_constraintLeft_toRightOf="@+id/userImageView"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="26dp"
+        android:layout_marginStart="26dp"
+        />
+
+    <TextView
+        android:id="@+id/userEmailTextView"
+        android:text="siosio3103@gmail.com"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/userImageView"
+        app:layout_constraintLeft_toRightOf="@+id/userImageView"
+        android:layout_marginLeft="26dp"
+        android:layout_marginStart="26dp"
+        />
+    
+
+</android.support.constraint.ConstraintLayout>

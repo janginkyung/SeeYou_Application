@@ -1,7 +1,6 @@
-package orgm.androidtown.app_location;
+package orgm.androidtown.app_location.singleton;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.skp.Tmap.TMapData;
 import com.skp.Tmap.TMapPoint;
@@ -18,6 +17,8 @@ public class Tdata {
     public static int location_id;
     public static int user_id;
 
+    private boolean checkInit;
+
     public static Tdata getInstance() {
         if(ourInstance==null)
             ourInstance=new Tdata();
@@ -25,6 +26,15 @@ public class Tdata {
     }
 
     private Tdata() {
+        checkInit = false;
+    }
+
+    public  boolean isCheckInit() {
+        return checkInit;
+    }
+
+    public  void setCheckInit(boolean checkInit) {
+        this.checkInit = checkInit;
     }
 
     public TMapView GetTmapview(){
@@ -37,7 +47,7 @@ public class Tdata {
     }
     private void SetTmapview(Context context){
         tmapview = new TMapView(context);
-        tmapview.setSKPMapApiKey("7b20d64c-023f-3225-a224-d888b951f720");
+        tmapview.setSKPMapApiKey("d0e64263-dfca-3848-ae5f-9e71bffa6764");
         tmapview.setZoomLevel(15);
         tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
         tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
@@ -61,7 +71,7 @@ public class Tdata {
     public void SetLocation_id(int integer){
         location_id=integer;
     }
-public int GetLocation_id(){
+    public int GetLocation_id(){
     return location_id;
 }
     public void SetUser_id(int integer){
