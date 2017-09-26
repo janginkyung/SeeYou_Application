@@ -4,6 +4,9 @@ var bodyParser = require('body-parser');
 var session = require('express-session')
 var mysql=require('mysql') ;
 
+app.use(session({
+  secret: 'keyboard cat'
+, cookie: { maxAge: 60000 }}))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -101,7 +104,6 @@ app.put('/location/user',function (req, res) {
 
 //LOCATION 테이블을 통하여 친구의 위치를 가져온다.
 app.get('/location/:fri_id',function (req, res) {
-  console.log("location get발생");
   var table='LOCATION';
   var fri_id=req.params.fri_id;
 
@@ -134,5 +136,4 @@ app.delete('/UserId/:UserId', function (req, res) {
     }
   })
 })
-
 var server=app.listen(23023);
